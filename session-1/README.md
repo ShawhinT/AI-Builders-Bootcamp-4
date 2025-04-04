@@ -3,6 +3,8 @@
 Links:
 - [Example 1: Scraping AI Job Board with Python](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-1/example_1-scrape_job_board.ipynb)
 - [Example 2: AI Job Dashboard with Streamlit (Vibe Coded)](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-1/example_2-job_dashboard_vibed.py)
+- [Live Example: Scraping Job Board (with ChatGPT)](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-1/example_live-job_board_scraper.ipynb)
+- [Live Example: Vibe Coding Job Dashboard](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-1/example_live-ai_jobs_dashboard.py)
 
 ## How to run the examples
 
