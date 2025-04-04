@@ -1,0 +1,9 @@
+jupyterlab
+ipykernel
+ipywidgets
+requests
+beautifulsoup4
+pandas
+matplotlib
+seaborn
+numpy
