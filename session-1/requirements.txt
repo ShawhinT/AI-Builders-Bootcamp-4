@@ -1,0 +1,10 @@
+jupyterlab
+ipykernel
+ipywidgets
+requests
+beautifulsoup4
+pandas==2.1.4
+dash
+plotly==5.18.0
+numpy==1.26.3
+streamlit==1.32.0
