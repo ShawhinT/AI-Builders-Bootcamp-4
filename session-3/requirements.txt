@@ -1,0 +1,16 @@
+jupyterlab
+ipykernel
+ipywidgets
+matplotlib
+beautifulsoup4
+pandas
+scikit-learn
+sentence-transformers
+openai
+numpy<2
+python-dotenv
+llama-index
+llama-index-embeddings-huggingface
+llama-index-llms-openai
+docling
+PyMuPDF
