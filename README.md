@@ -20,7 +20,7 @@ Examples:
 - [Text classifier](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-2/example_2-text-classifier.ipynb)
 - [Local visual QA with LLaMA 3.2 Vision](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-2/example_3-local_visual_QA.ipynb)
 
-## Session 4: RAG, Text Embeddings
+## Session 3: RAG, Text Embeddings
 Prompting LLMs ChatGPT-style only scratches the surface of what we can use modern language models for. We can also leverage RAG to improve model performance and text embeddings to make text computable.
 
 Examples:
