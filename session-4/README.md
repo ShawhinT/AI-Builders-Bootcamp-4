@@ -1,8 +1,8 @@
 # Session 4: Tool Use & AI Agents
 
 Links:
-- [Example 1: YouTube Agent with Agents SDK]
-- [Example 2: Upwork Profile Rewriter (in a loop)]
+- [Example 1: YouTube Agent with Agents SDK](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-4/example_1-youtube_agent.ipynb)
+- [Example 2: Upwork Profile Rewriter (in a loop)](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-4/example_2-profile_rewriter_loop.ipynb)
 
 ## How to run the examples
 
