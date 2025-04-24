@@ -34,5 +34,5 @@ While prompting LLMs and automatically giving them relevant context can take us 
 Agents present a new way of thinking about software. Rather than explicitly defining rules and business logic, agents involve giving LLMs the tools they need to solve problems.
 
 Examples:
-- [Example 1: YouTube Agent with Agents SDK](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-4/example_1-youtube_agent.ipynb)
-- [Example 2: Upwork Profile Rewriter (in a loop)](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-4/example_2-profile_rewriter_loop.ipynb)
+- [YouTube Agent with Agents SDK](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-4/example_1-youtube_agent.ipynb)
+- [Upwork Profile Rewriter (in a loop)](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-4/example_2-profile_rewriter_loop.ipynb)
