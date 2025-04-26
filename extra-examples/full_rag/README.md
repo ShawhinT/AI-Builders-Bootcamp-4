@@ -31,6 +31,50 @@ This project implements an advanced Retrieval-Augmented Generation (RAG) system 
    - Source selection and filtering
    - Display of retrieved documentation sources
 
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph Crawler[crawler.py]
+        C1[chunk_text] --> C2[process_chunk]
+        C2 --> |Embeddings| C3[get_embedding]
+        C2 --> |Title/Summary| C4[get_title_and_summary]
+        C3 --> C5[insert_chunk]
+        C4 --> C5
+        C6[crawl_parallel] --> C1
+        C7[get_site_urls] --> C6
+    end
+
+    subgraph Agent[agent.py]
+        A1[docs_expert Agent] --> A2[retrieve_relevant_documentation]
+        A1 --> A3[list_documentation_pages]
+        A1 --> A4[get_page_content]
+        A2 --> |Embeddings| A5[get_embedding]
+    end
+
+    subgraph UI[streamlit_ui.py]
+        U1[main] --> U2[run_agent_with_streaming]
+        U2 --> U3[display_message_part]
+        U2 --> U4[display_retrieved_urls]
+        U5[get_unique_sources] --> U1
+    end
+
+    %% External Services
+    DB[(Supabase DB)]
+    OpenAI[OpenAI API]
+
+    %% Connections between components
+    C5 --> DB
+    A2 --> DB
+    A3 --> DB
+    A4 --> DB
+    U5 --> DB
+    C3 --> OpenAI
+    C4 --> OpenAI
+    A5 --> OpenAI
+    A1 --> U2
+```
+
 ## Setup Instructions
 
 ### 1. Environment Setup
