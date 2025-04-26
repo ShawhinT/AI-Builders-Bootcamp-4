@@ -165,3 +165,35 @@ The interface will be available at `http://localhost:8501`
    - Hybrid search using vector similarity
    - Source filtering capabilities
    - Structured response format with analysis and citations
+
+## Embedding Analysis
+
+The project includes an embedding analysis tool (`embedding_analysis.py`) that helps visualize and analyze the vector embeddings using Nomic Atlas. This tool is useful for:
+
+- Visualizing the semantic relationships between documents
+- Identifying clusters of similar content
+- Analyzing the distribution of topics across the documentation
+
+### Usage
+
+1. Make sure you have a Nomic API key in your `.env` file:
+```
+NOMIC_API_KEY=your_nomic_api_key
+```
+
+2. Run the analysis:
+```bash
+python embedding_analysis.py
+```
+
+The tool will:
+- Fetch document data from Supabase
+- Create embeddings using Nomic's Atlas service
+- Generate interactive visualizations accessible through the Atlas UI
+
+### Features
+
+- **Topic Modeling**: Automatically identifies and clusters similar content
+- **Interactive Visualization**: Explore document relationships in 3D space
+- **URL-based Analysis**: Groups content by domain for source-based insights
+- **Large-scale Processing**: Can handle up to 100,000 document chunks
