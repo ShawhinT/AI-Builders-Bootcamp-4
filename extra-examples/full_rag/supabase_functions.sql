@@ -59,19 +59,7 @@ begin
 end;
 $$;
 
--- Everything above will work for any PostgreSQL database. The below commands are for Supabase security
-
--- Enable RLS on the table
-alter table site_pages enable row level security;
-
--- Create a policy that allows anyone to read
-create policy "Allow public read access"
-  on site_pages
-  for select
-  to public
-  using (true);
-
-  - Create a function to get unique sources
+-- Create a function to get unique sources
 create or replace function get_unique_sources()
 returns table (
     source text,
@@ -88,9 +76,22 @@ as $$
     order by url_count desc, source;
 $$;
 
+
+-- Everything above will work for any PostgreSQL database. The below commands are for Supabase security
+
+-- Enable RLS on the table
+alter table site_pages enable row level security;
+
+-- Create a policy that allows anyone to read
+create policy "Allow public read access"
+  on site_pages
+  for select
+  to public
+  using (true);
+
+
 /**
 -- Optional: create a keywords table
-
 
 -- Create the keywords table
 create table keywords (
