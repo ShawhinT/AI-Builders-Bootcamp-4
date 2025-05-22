@@ -26,7 +26,7 @@ Prompting LLMs ChatGPT-style only scratches the surface of what we can use moder
 Examples:
 - [Analyzing Unstructured Survey Data](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-3/example_1-unstructured_survey_analysis.ipynb)
 - [RAG with LlamaIndex](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-3/example_2-rag_with_llamaindex.ipynb)
-- [PDF Parsing with Docling)](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-3/example_3-pdf_parsing_docling.ipynb)
+- [PDF Parsing with Docling](https://github.com/ShawhinT/AI-Builders-Bootcamp-4/blob/main/session-3/example_3-pdf_parsing_docling.ipynb)
 
 ## Session 4: Tool Use, AI Agents
 While prompting LLMs and automatically giving them relevant context can take us far, they still involve a traditional approach to software development. Namely, developers break down tasks into steps and translate them into code + LLM calls. 
