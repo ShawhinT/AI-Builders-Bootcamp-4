@@ -89,6 +89,23 @@ create policy "Allow public read access"
   to public
   using (true);
 
+-- Function to check if URLs already exist in the database
+create or replace function check_urls_exist(urls text[])
+returns table (
+    check_url text,
+    is_scraped boolean
+) 
+language sql
+as $$
+    select 
+        url_check.url as check_url,
+        CASE WHEN sp.url IS NOT NULL THEN true ELSE false END as is_scraped
+    from 
+        (select unnest(urls) as url) as url_check
+    left join 
+        (select distinct url from site_pages) as sp 
+    on url_check.url = sp.url;
+$$;
 
 /**
 -- Optional: create a keywords table
