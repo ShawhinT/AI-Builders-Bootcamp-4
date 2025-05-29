@@ -65,13 +65,24 @@ def display_message_part(part):
             st.markdown(part.content)          
 
 
-def display_retrieved_urls(urls: list[str], title: str = "Retrieved URLs"):
+async def display_retrieved_urls(urls: list[str], title: str = "Retrieved URLs"):
     """Display retrieved URLs in the sidebar with a title."""
     with st.sidebar:
         st.subheader(title)
-        for url in urls:
-            st.markdown(f"- [{url}]({url})")
-        st.markdown("---")
+        if not urls:
+            st.info("No URLs were retrieved for this query.")
+        else:
+            for url in urls:
+                # Handle formatted URLs (Title - URL format)
+                if ' - ' in url and ('http://' in url or 'https://' in url):
+                    parts = url.split(' - ')
+                    title_part = ' - '.join(parts[:-1])
+                    url_part = parts[-1]
+                    st.markdown(f"- [{title_part}]({url_part})")
+                else:
+                    st.markdown(f"- [{url}]({url})")
+            st.markdown("---")
+
 
 async def run_agent_with_streaming(user_input: str, selected_sources: list[str]):
     """
@@ -115,16 +126,18 @@ async def run_agent_with_streaming(user_input: str, selected_sources: list[str])
                 for part in msg.parts:
                     if part.part_kind == 'tool-return':
                         try:
-                            # Handle retrieve_relevant_documentation returns
-                            if 'documents' in part.content:
-                                docs = json.loads(part.content)['documents']
-                                for doc in docs:
-                                    if 'url' in doc:
-                                        retrieved_urls.add(doc['url'])
                             # Handle list_documentation_pages returns
-                            elif isinstance(part.content, list):
+                            if isinstance(part.content, list):
                                 retrieved_urls.update(url for url in part.content if isinstance(url, str))
-                        except (json.JSONDecodeError, KeyError):
+                            # Handle retrieve_relevant_documentation returns
+                            elif isinstance(part.content, str) and '**URL**:' in part.content:
+                                # Extract URLs from markdown content
+                                for line in part.content.split('\n'):
+                                    if '**URL**:' in line:
+                                        url = line.split('**URL**:')[1].strip()
+                                        retrieved_urls.add(url)
+                        except Exception as e:
+                            print(f"Error extracting URLs: {e}")
                             continue
 
         # Display retrieved URLs in sidebar
