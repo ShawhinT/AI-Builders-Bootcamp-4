@@ -102,33 +102,60 @@ async def retrieve_relevant_documentation(ctx: RunContext[DocsAIDeps], user_quer
         # Use selected sources from deps
         sources = ctx.deps.selected_sources or []
         
-        # Query Supabase for relevant documents with source filtering
+        # Create a filter object for source filtering
+        filter_obj = {}
+        
+        # Handle source filtering
+        if sources and len(sources) == 1:
+            # For a single source, we can use the direct filter
+            filter_obj = {'source': sources[0]}
+        
+        # Query Supabase for relevant documents
         result = ctx.deps.supabase.rpc(
             'match_site_pages',
             {
                 'query_embedding': query_embedding,
                 'match_count': 5,
-                'filter': {'sources': sources}
+                'filter': filter_obj
             }
         ).execute()
         
+        # If no results with filter, try without filter
+        if not result.data and filter_obj:
+            # Try again without filter
+            result = ctx.deps.supabase.rpc(
+                'match_site_pages',
+                {
+                    'query_embedding': query_embedding,
+                    'match_count': 5,
+                    'filter': {}
+                }
+            ).execute()
+        
         if not result.data:
-            return "No relevant documentation found."
+            return "No relevant documentation found. Please check that your database contains indexed documentation."
             
-        # Format the results
+        # Format the results with more detailed information
         formatted_chunks = []
         for doc in result.data:
+            source = doc['metadata'].get('source', 'Unknown') if doc.get('metadata') else 'Unknown'
+            similarity = doc.get('similarity', 0)
+            similarity_percentage = f"{similarity * 100:.1f}%" if similarity else 'N/A'
+            
             chunk_text = f"""
-                <document>
-                {doc['title']}
+                ## {doc['title']} (Relevance: {similarity_percentage})
+                **Source**: {source}
+                **URL**: {doc['url']}
 
                 {doc['content']}
-                </document>
-                """
+            """
             formatted_chunks.append(chunk_text)
             
+        # Add a header with summary of results
+        header = f"# Found {len(formatted_chunks)} relevant documentation chunks\n\n"
+        
         # Join all chunks with a separator
-        return "\n\n---\n\n".join(formatted_chunks)
+        return header + "\n\n---\n\n".join(formatted_chunks)
         
     except Exception as e:
         print(f"Error retrieving documentation: {e}")
@@ -147,45 +174,60 @@ async def list_documentation_pages(ctx: RunContext[DocsAIDeps]) -> List[str]:
         sources = ctx.deps.selected_sources or []
         
         # Build the query
-        query = ctx.deps.supabase.from_('site_pages').select('url')
+        query = ctx.deps.supabase.from_('site_pages').select('url, title')
         
         # If sources are selected, filter by them
         if sources:
+            # Use in_ operator for multiple sources
             query = query.in_('metadata->>source', sources)
-            
+        
         # Execute the query
         result = query.execute()
         
         if not result.data:
-            return []
-            
-        # Extract unique URLs
-        urls = sorted(set(doc['url'] for doc in result.data))
-        return urls
+            # Return a message indicating no documentation is available
+            return ["No documentation pages available. Please check your database connection or add documentation."]
+        
+        # Extract unique URLs with titles
+        unique_pages = {}
+        for doc in result.data:
+            if doc['url'] not in unique_pages:
+                unique_pages[doc['url']] = doc['title']
+        
+        # Format as a list of strings with title and URL
+        formatted_urls = [f"{title} - {url}" for url, title in unique_pages.items()]
+        return sorted(formatted_urls)
         
     except Exception as e:
         print(f"Error retrieving documentation pages: {e}")
-        return []
+        return [f"Error retrieving documentation pages: {str(e)}"]
 
 @docs_expert.tool
-async def get_page_content(ctx: RunContext[DocsAIDeps], url: str) -> str:
+async def get_page_content(ctx: RunContext[DocsAIDeps], url_or_formatted_string: str) -> str:
     """
     Retrieve the full content of a specific documentation page by combining all its chunks.
     
     Args:
         ctx: The context including the Supabase client
-        url: The URL of the page to retrieve
+        url_or_formatted_string: The URL of the page to retrieve, or a formatted string containing the URL
         
     Returns:
         str: The complete page content with all chunks combined in order
     """
     try:
+        # Extract the URL if it's in a formatted string (e.g., "Title - https://example.com")
+        if ' - ' in url_or_formatted_string and ('http://' in url_or_formatted_string or 'https://' in url_or_formatted_string):
+            # Extract the URL part after the last ' - '
+            url = url_or_formatted_string.split(' - ')[-1].strip()
+        else:
+            url = url_or_formatted_string.strip()
+        
         # Get selected sources from deps
         sources = ctx.deps.selected_sources or []
         
         # Build the query
         query = ctx.deps.supabase.from_('site_pages') \
-            .select('title, content, chunk_number') \
+            .select('title, content, chunk_number, metadata') \
             .eq('url', url)
             
         # If sources are selected, filter by them
@@ -196,18 +238,25 @@ async def get_page_content(ctx: RunContext[DocsAIDeps], url: str) -> str:
         result = query.order('chunk_number').execute()
         
         if not result.data:
-            return f"No content found for URL: {url}"
-            
+            return f"No content found for URL: {url}. Please check that the URL is correct and exists in the database."
+        
+        # Get metadata from the first chunk
+        metadata = result.data[0].get('metadata', {})
+        source = metadata.get('source', 'Unknown') if metadata else 'Unknown'
+        
         # Format the page with its title and all chunks
         page_title = result.data[0]['title'].split(' - ')[0]  # Get the main title
-        formatted_content = [f"# {page_title}\n"]
+        
+        # Create a header with metadata
+        header = f"# {page_title}\n\n**Source**: {source}\n**URL**: {url}\n\n## Content:\n"
         
         # Add each chunk's content
+        content_parts = []
         for chunk in result.data:
-            formatted_content.append(chunk['content'])
+            content_parts.append(chunk['content'])
             
         # Join everything together
-        return "\n\n".join(formatted_content)
+        return header + "\n\n".join(content_parts)
         
     except Exception as e:
         print(f"Error retrieving page content: {e}")
